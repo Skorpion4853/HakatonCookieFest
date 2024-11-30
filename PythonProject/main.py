@@ -26,7 +26,7 @@ async def start(message):
 #Main Menu
 @bot.message_handler(content_types=['text'])
 async def MainMenu(message):
-    adm = 0
+    adm = 1     #надо брать из БД, но пока заглушка
     if adm == 1:    #надо брать из БД, но пока заглушка
         username = 'Иванов Иван Иваныч'     #надо брать из БД, но пока заглушка
         text = f'Привет, {username}\nВыбери действие'
@@ -100,6 +100,15 @@ async def check_callback_data(callback):
         csv_btn = types.InlineKeyboardButton(text='Comma-Separated Values .csv', callback_data='dwnldCSV')
         bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToEmployeerMenu')
         mkup.add(xlsx_btn, json_btn, csv_btn, bck_btn)
+        await bot.delete_message(callback.message.chat.id, callback.message.id)
+        await bot.send_message(callback.message.chat.id, text, reply_markup=mkup)
+    elif callback.data == 'Manage':
+        text = 'Выберите действие'
+        mkup = types.InlineKeyboardMarkup(row_width=1)
+        add_btn = types.InlineKeyboardButton(text = 'Добавить сотрудника', callback_data='addEmployee')
+        del_btn = types.InlineKeyboardButton(text = 'Удалить сотрудника', callback_data='delEmployee')
+        bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToEmployeerMenu')
+        mkup.add(add_btn, del_btn, bck_btn)
         await bot.delete_message(callback.message.chat.id, callback.message.id)
         await bot.send_message(callback.message.chat.id, text, reply_markup=mkup)
 #Запуск бота
