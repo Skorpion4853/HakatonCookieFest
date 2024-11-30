@@ -35,7 +35,6 @@ def get_worker_top(cur_user: int, sorting: str) -> str: #Функция для �
                 price += operation[3]
                 salary += operation[3] * prices[operation[2]] / 100
             full_name = users_df[users_df["id"].isin([user])]["full_name"].to_numpy()[0] #Вытаскиваем фио сотрудника
-            print(price, salary)
             data.append([full_name, round(price, 2), round(salary, 2)])
 
 
@@ -76,7 +75,6 @@ def get_worker_top(cur_user: int, sorting: str) -> str: #Функция для �
 
 def auth(login: str, password: str) -> bool or None:
     cnx = connect_to_mysql(get_config(), attempts=3) #делаем коннект к БД
-    print("aaaa")
     if cnx and cnx.is_connected(): #Если коннект прошел успешно создаем курсор
         cursor = cnx.cursor()
 

@@ -1,6 +1,4 @@
-import mysql.connector
 import asyncio
-import sngs
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 from telebot.asyncio_storage import StateMemoryStorage
@@ -8,10 +6,11 @@ from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot import asyncio_filters
 from telebot.states.sync.context import StateContext
 from DabaseCommand import auth
+from Config import get_token
 
 
 #Объяление бота
-bot = AsyncTeleBot(sngs.bot_token ,state_storage=StateMemoryStorage())
+bot = AsyncTeleBot(get_token() ,state_storage=StateMemoryStorage())
 
 #Подключение к SQL-серверу
 #sql = mysql.connector.connect(user = sngs.USERNAME,
@@ -64,12 +63,10 @@ async def password_state(message, state: StateContext):
         login = data.get("login")
         password = data.get("password")
     status = auth(login=login, password=password)
-    print(status)
     if status != None:
         await bot.send_message(message.chat.id, f"Вы успешно зашли под логином: {login}")
         await bot.set_state(user_id=message.from_user.id, state=loginState.authorizated,
                           chat_id=message.chat.id)
-        print(status)
     else:
         await bot.send_message(message.chat.id, f"Неправильный логин или пароль!!")
     await bot.delete_state(user_id=message.from_user.id, chat_id=message.chat.id)
@@ -120,4 +117,5 @@ bot.add_custom_filter(asyncio_filters.StateFilter(bot))
 from telebot.states.asyncio.middleware import StateMiddleware
 
 bot.setup_middleware(StateMiddleware(bot))
+print("bot is active")
 asyncio.run(bot.polling())
