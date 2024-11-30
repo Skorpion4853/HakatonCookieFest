@@ -180,12 +180,12 @@ def get_branch_top(cur_user: str) -> str: #Функция для вывода т
         #Вытаскивание данных из БД
 
         #Запрос на вывод филиала залогиненого сотрудника
-        query = "SELECT branch FROM Users WHERE login = %s"
+        query = "SELECT filial FROM Users WHERE login = %s"
         cursor.execute(query, [cur_user])
         cur_branch = cursor.fetchall()\
 
         #Запрос на вывод филиала каждого сотрудника
-        query = "SELECT branch FROM Users"
+        query = "SELECT filial FROM Users"
         cursor.execute(query)
         users_branches = cursor.fetchall()
 
@@ -209,7 +209,7 @@ def get_branch_top(cur_user: str) -> str: #Функция для вывода т
             # Создаем объект дата фрейма со всеми операциями филиала
             for operation in operation_df[operation_df["worker_id"].isin([branch[0]])].to_numpy():
                 price += operation[-1]
-            data.append([branch, round(price, 2)])
+            data.append([branch[0], round(price, 2)])
 
 
         df_top_u = pd.DataFrame(columns=["branch", "price"], data=data) #Создаем pd серию для вывода
@@ -223,7 +223,6 @@ def get_branch_top(cur_user: str) -> str: #Функция для вывода т
             place += 1 #Делаем перемещение по местам в топе
             if cur_branch[0] == top_user[0]: #Сохраняем позицию пользователя если ФИО совпадает
                 user_place = place
-
             #Делаем проверку для первые 3 филиала и добавляем им стикеры соответсвующее их месту в топе
             if place == 1:
                 top_str += "\U0001F947 " + " ".join(map(str,top_user)) + "\n"
@@ -257,11 +256,11 @@ def return_branch_top(cur_user: str) -> pd.DataFrame or str: #Функция д�
         #Вытаскивание данных из БД
 
         #Запрос на вывод филиала залогиненого сотрудника
-        query = "SELECT branch FROM Users WHERE login = %s"
+        query = "SELECT filial FROM Users WHERE login = %s"
         cursor.execute(query, [cur_user])
 
         #Запрос на вывод филиала каждого сотрудника
-        query = "SELECT branch FROM Users"
+        query = "SELECT filial FROM Users"
         cursor.execute(query)
         users_branches = cursor.fetchall()
 
