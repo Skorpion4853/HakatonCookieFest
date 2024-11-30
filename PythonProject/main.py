@@ -58,13 +58,20 @@ async def MainMenu(message):
 #Обработка callback ботом
 @bot.callback_query_handler(func = lambda callback: callback.data)
 async def check_callback_data(callback):
-    if callback.data == 'ratings':
+    if callback.data == 'ratings': #Выводим раздел рейтинги
         mkup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton(text='Назад', callback_data='back')
         mkup.add(btn1)
         await bot.edit_message_text('Рейтинги пока не доступны',callback.message.chat.id, callback.message.id, reply_markup = mkup)
-    elif callback.data == 'back':
-        username = 'Иванов Иван Иваныч'
+    elif callback.data == 'profile': #Выводим раздел профиль
+        username = 'Иванов Иван Иваныч'  # Заглушка, брать из БД
+        text = f'Профиль\nФИО: {username}'
+        mkup = types.InlineKeyboardMarkup()
+        bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='back')
+        mkup.add((bck_btn))
+        await bot.send_message(callback.message.chat.id, text, reply_markup=mkup)
+    elif callback.data == 'back': #Возврат к меню работника
+        username = 'Иванов Иван Иваныч' #Заглушка, брать из БД
         text = f'Привет, {username}\nВыбери действие'
         marup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton(text='Рейтинги', callback_data='ratings')
