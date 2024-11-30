@@ -31,16 +31,12 @@ async def start(message):
     text = 'Привет!\nЯ - чат-бот по мотивации вашей работы!\nПожалуйста, введите ваш логин и пароль через двоеточие\nНапрмер: ivanov:12345'
     await bot.send_message(message.chat.id, text)
 
-#Авторизация (попытка)
-'''
-@bot.message_handler(content_types=['text'])
-async def Auth(message):
-'''
 
+#Main Menu
 @bot.message_handler(content_types=['text'])
 async def MainMenu(message):
     adm = 0
-    if adm == 1:
+    if adm == 1:  #надо брать из БД, но пока заглушка
         username = 'Иванов Иван Иваныч'
         text = f'Привет, {username}\nВыбери действие'
         mkup = types.InlineKeyboardMarkup()
@@ -49,7 +45,7 @@ async def MainMenu(message):
         mng_btn = types.InlineKeyboardButton(text='Управление сотрудниками', callback_data='Manage')
         mkup.Add(rngs_btn, dwnld_btn, mng_btn)
         await bot.send_message(message.chat.id, text, reply_markup=mkup)
-    elif adm == 0:
+    elif adm == 0:  #надо брать из БД, но пока заглушка
         username = 'Иванов Иван Иваныч'
         text = f'Привет, {username}\nВыбери действие'
         mkup = types.InlineKeyboardMarkup()
@@ -62,16 +58,17 @@ async def MainMenu(message):
 #Обработка callback ботом
 @bot.callback_query_handler(func = lambda callback: callback.data)
 async def check_callback_data(callback):
-    if callback.data == 'rtngs':
+    if callback.data == 'ratings':
+        mkup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton(text='Назад', callback_data='back')
+        mkup.add(btn1)
+        await bot.edit_message_text('Рейтинги пока не доступны',callback.message.chat.id, callback.message.id, reply_markup = mkup)
+    elif callback.data == 'back':
+        username = 'Иванов Иван Иваныч'
+        text = f'Привет, {username}\nВыбери действие'
         marup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(text='назад', callback_data='bck')
-        marup.add(btn1)
-        await bot.edit_message_text('Рейтинги пока не доступны',callback.message.chat.id, callback.message.id, reply_markup = marup)
-    elif callback.data == 'bck':
-        text = cursor.fetchall()
-        marup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(text='Рейтинги', callback_data='rtngs')
-        btn2 = types.InlineKeyboardButton(text='Профиль', callback_data='prfl')
+        btn1 = types.InlineKeyboardButton(text='Рейтинги', callback_data='ratings')
+        btn2 = types.InlineKeyboardButton(text='Профиль', callback_data='profile')
         marup.add(btn1, btn2)
         await bot.edit_message_text(text, callback.message.chat.id, callback.message.id, reply_markup=marup)
 
