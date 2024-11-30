@@ -7,6 +7,7 @@ from telebot.asyncio_storage import StateMemoryStorage
 from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot import asyncio_filters
 from telebot.states.sync.context import StateContext
+from DabaseCommand import auth
 
 
 #Объяление бота
@@ -62,17 +63,19 @@ async def password_state(message, state: StateContext):
     async with state.data() as data:
         login = data.get("login")
         password = data.get("password")
-    status = check_login(login=login, password=password)
-    if status:
+    status = auth(login=login, password=password)
+    print(status)
+    if status != None:
         await bot.send_message(message.chat.id, f"Вы успешно зашли под логином: {login}")
         await bot.set_state(user_id=message.from_user.id, state=loginState.authorizated,
                           chat_id=message.chat.id)
+        print(status)
     else:
         await bot.send_message(message.chat.id, f"Неправильный логин или пароль!!")
     await bot.delete_state(user_id=message.from_user.id, chat_id=message.chat.id)
 
 #Main Menu
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(content_types=['text'], state=loginState.authorizated)
 async def MainMenu(message):
     adm = 0
     if adm == 1:  #надо брать из БД, но пока заглушка
