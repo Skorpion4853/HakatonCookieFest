@@ -109,8 +109,7 @@ async def check_callback_data(callback):
         del_btn = types.InlineKeyboardButton(text = 'Удалить сотрудника', callback_data='delEmployee')
         bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToEmployeerMenu')
         mkup.add(add_btn, del_btn, bck_btn)
-        await bot.delete_message(callback.message.chat.id, callback.message.id)
-        await bot.send_message(callback.message.chat.id, text, reply_markup=mkup)
+        await bot.edit_message_text(text, callback.message.chat.id, callback.message.id, reply_markup=mkup)
 #Запуск бота
 asyncio.run(bot.polling())
 
