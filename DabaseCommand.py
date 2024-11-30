@@ -15,13 +15,13 @@ def get_worker_top(cur_user: int, sorting: str) -> str: #Функция для �
             3: 10
                   }
         #Вытаскивание данных из БД
-        cursor.execute("SELECT id, full_name, filial FROM Users")
+        cursor.execute("SELECT id, full_name FROM Users")
         users = cursor.fetchall()
         cursor.execute("SELECT * FROM Operations")
         operation = cursor.fetchall()
 
         #Сохранение данных из БД в формате DataFrame для работы с ними
-        users_df = pd.DataFrame(columns=["id", "full_name", "filial"], data=users)
+        users_df = pd.DataFrame(columns=["id", "full_name"], data=users)
         operation_df = pd.DataFrame(columns=["id", "worker_id", "type", "price"], data=operation)
 
         uniq_id = operation_df["worker_id"].unique() #Сохранение уникальных id из table операций
@@ -29,13 +29,15 @@ def get_worker_top(cur_user: int, sorting: str) -> str: #Функция для �
         data = [] #Пустышка для сохранения данных для итогового датафрейма с рейтингом
 
         for user in uniq_id: #перебираем всех юзеров, что работали в этом месяце
-            price = 0
-            salary = 0
+            price = 0.00
+            salary = 0.00
             for operation in operation_df[operation_df["worker_id"].isin([user])].to_numpy(): #Создаем объект датафрейма со всеми операциями пользователя
                 price += operation[3]
                 salary += operation[3] * prices[operation[2]] / 100
             full_name = users_df[users_df["id"].isin([user])]["full_name"].to_numpy()[0] #Вытаскиваем фио сотрудника
-            data.append([full_name, price, salary])
+            print(price, salary)
+            data.append([full_name, round(price, 2), round(salary, 2)])
+
 
 
         df_top_u = pd.DataFrame(columns=["full_name", "price", "salary"], data=data) #Создаем pd серию для вывода
@@ -71,3 +73,6 @@ def get_worker_top(cur_user: int, sorting: str) -> str: #Функция для �
         return top_str
     else:
         return "Could not connect"
+
+def auth(login: str, password: str) -> bool or None:
+    ...
