@@ -1,5 +1,5 @@
 # 📈 Система мотивации сотрудников отдела продаж
-![](https://img.shields.io/badge/Made_by-НКЭиВТ-blue) ![](https://img.shields.io/badge/Python-3.12.X-yellow) ![](https://img.shields.io/badge/PyTelegramBotAPI-4.24.0-green) ![](https://img.shields.io/badge/MySQLConnector-9.1.0-skyblue) ![](https://img.shields.io/badge/Pandas-2.2.3-orange)
+![](https://img.shields.io/badge/Made_by-НКЭиВТ-blue) ![](https://img.shields.io/badge/Python-3.12.X-yellow) ![](https://img.shields.io/badge/PyTelegramBotAPI-4.24.0-lightseagreen) ![](https://img.shields.io/badge/MySQLConnector-9.1.0-deepskyblue) ![](https://img.shields.io/badge/Pandas-2.2.3-mediumpurple)
 ## Содержание:
   - [О нас:](#о-нас)
     - [Состав команды:](#состав-команды)
