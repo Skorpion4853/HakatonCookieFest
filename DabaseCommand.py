@@ -75,4 +75,25 @@ def get_worker_top(cur_user: int, sorting: str) -> str: #Функция для �
         return "Could not connect"
 
 def auth(login: str, password: str) -> bool or None:
-    ...
+    cnx = connect_to_mysql(get_config(), attempts=3) #делаем коннект к БД
+
+    if cnx and cnx.is_connected(): #Если коннект прошел успешно создаем курсор
+        cursor = cnx.cursor()
+
+        # Делаем запрос в БД на нахождение пользователя
+        query = 'SELECT access FROM Users WHERE login = (%s) AND password = (%s)'
+
+        data = (login, password)
+
+        cursor.execute(query, data)
+
+        back = cursor.fetchall()
+
+        cursor.close()
+        cnx.close()
+        try:
+            return back[0][0] #Возвращаем True если пользователь работодатель, или False если это работник
+        except IndexError:
+            return None #Возвращаем None если пользователь не найден
+    else:
+        return "Could not connect"
