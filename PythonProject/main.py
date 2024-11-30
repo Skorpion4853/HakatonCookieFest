@@ -63,7 +63,9 @@ async def password_state(message, state: StateContext):
         await state.add_data(permission=status)
         await MainMenu(message, state)
     else:
-        await bot.send_message(message.chat.id, f"Неправильный логин или пароль!!")
+        await bot.send_message(message.chat.id, f"Неправильный логин или пароль!!\nВведите логин")
+        await bot.set_state(user_id=message.from_user.id, state=loginState.login,
+                            chat_id=message.chat.id)
 
 
 #Main Menu
@@ -127,7 +129,7 @@ async def back_menu(callback: types.CallbackQuery, state: StateContext):
 async def download_DB(callback: types.CallbackQuery):
     text = 'Выберите формат файла'
     mkup = types.InlineKeyboardMarkup(row_width=1)
-    xlsx_btn = types.InlineKeyboardButton(text='Exel .xlsx', callback_data='dwnldXLSX')
+    xlsx_btn = types.InlineKeyboardButton(text='Excel .xlsx', callback_data='dwnldXLSX')
     json_btn = types.InlineKeyboardButton(text='JavaScript Object Notation .json', callback_data='dwnldJSON')
     csv_btn = types.InlineKeyboardButton(text='Comma-Separated Values .csv', callback_data='dwnldCSV')
     bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToMenu')
