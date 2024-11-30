@@ -14,12 +14,13 @@ cnx = mysql.connector.connect(user=USERNAME, password=PASSWORD,
                               database=DATABASE)
 
 cursor = cnx.cursor()
+#cursor.execute("DROP TABLE Operations")
 #cursor.execute("DROP TABLE Users")
 query = ('''
 CREATE TABLE IF NOT EXISTS Users (
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 full_name NVARCHAR(200) NOT NULL,
-login NVARCHAR(100) NOT NULL,
+login NVARCHAR(100) NOT NULL UNIQUE,
 password NVARCHAR(100) NOT NULL,
 filial NVARCHAR(10) NOT NULL,
 access BOOL NOT NULL
