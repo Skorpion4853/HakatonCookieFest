@@ -34,8 +34,8 @@ fake = Faker()
 filial_options = ["Филиал 1", "Филиал 2", "Филиал 3", "Филиал 4"]
 
 data_user = (
-    (fake.name(), fake.user_name(), fake.password(), choice(filial_options), randint(0, 1)),
-    (fake.name(), fake.user_name(), fake.password(), choice(filial_options), randint(0, 1)),
+    ("Ivan Ivanovich", "admin", "admin", choice(filial_options), 1),
+    ("Anatoliy Anatolivich", 'user', 'user', choice(filial_options), 0),
     (fake.name(), fake.user_name(), fake.password(), choice(filial_options), randint(0, 1)),
     (fake.name(), fake.user_name(), fake.password(), choice(filial_options), randint(0, 1)),
     (fake.name(), fake.user_name(), fake.password(), choice(filial_options), randint(0, 1)),
@@ -67,8 +67,6 @@ i = 0
 
 # Выводим результаты
 for user in users:
-    i+=1
-    print(i, end=" ")
     for elem in user:
         print(elem, end=" ")
     print()
