@@ -1,5 +1,6 @@
 import asyncio
 from telebot.async_telebot import AsyncTeleBot
+import os
 from telebot import types
 from telebot.asyncio_storage import StateMemoryStorage
 from telebot.asyncio_handler_backends import State, StatesGroup
@@ -8,7 +9,7 @@ from telebot.states.sync.context import StateContext
 from DabaseCommand import auth
 from Config import get_token
 
-from DabaseCommand import get_worker_top
+from DabaseCommand import get_worker_top, return_worker_top
 
 from telebot.callback_data import CallbackData, CallbackDataFilter
 
@@ -85,7 +86,7 @@ async def password_state(message, state: StateContext):
 async def MainMenu(message, state: StateContext):
     async with state.data() as data:
         adm = data.get('permission')
-    if adm == 1:    #надо брать из БД, но пока заглушка
+    if adm == 1:
         username = 'Иванов Иван Иваныч'     #надо брать из БД, но пока заглушка
         text = f'Привет, {username}\nВыбери действие'
         mkup = types.InlineKeyboardMarkup(row_width=1)
@@ -120,24 +121,28 @@ async def employee_rating(callback_query: types.CallbackQuery):
                                 reply_markup=mkup)
 
 
-@bot.callback_query_handler(lambda c: c.data == 'global rating') #Глобальный рейтиинг по сэллари
-async def global_rating(callback_query: types.CallbackQuery):
+@bot.callback_query_handler(lambda c: c.data == 'global rating') #Глобальный рейтинг по сэллари
+async def global_rating(callback_query: types.CallbackQuery, state: StateContext):
+    async with state.data() as data:
+        login = data.get("login")
     mkup = types.InlineKeyboardMarkup(row_width=1)
     glb_rtngs_btn = types.InlineKeyboardButton(text='Salary', callback_data='global rating')
     brnch_rtngs_btn = types.InlineKeyboardButton(text='Price', callback_data='global rating_p')
     bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToMenu')
     mkup.add(glb_rtngs_btn, brnch_rtngs_btn, bck_btn)
-    await bot.edit_message_text(f'{get_worker_top(callback_query.message.from_user.id, "salary")}', callback_query.message.chat.id, callback_query.message.id,
+    await bot.edit_message_text(f'{get_worker_top(login, "salary")}', callback_query.message.chat.id, callback_query.message.id,
                                 reply_markup=mkup)
 
-@bot.callback_query_handler(lambda c: c.data == 'global rating_p') #Глобальный рейтиинг по прайсу
-async def global_rating_p(callback_query: types.CallbackQuery):
+@bot.callback_query_handler(lambda c: c.data == 'global rating_p') #Глобальный рейтинг по прайсу
+async def global_rating_p(callback_query: types.CallbackQuery, state: StateContext):
+    async with state.data() as data:
+        login = data.get("login")
     mkup = types.InlineKeyboardMarkup(row_width=1)
     glb_rtngs_btn = types.InlineKeyboardButton(text='Salary', callback_data='global rating')
     brnch_rtngs_btn = types.InlineKeyboardButton(text='Price', callback_data='global rating_p')
     bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToMenu')
     mkup.add(glb_rtngs_btn, brnch_rtngs_btn, bck_btn)
-    await bot.edit_message_text(f'{get_worker_top(callback_query.message.from_user.id, "price")}', callback_query.message.chat.id, callback_query.message.id,
+    await bot.edit_message_text(f'{get_worker_top(login, "price")}', callback_query.message.chat.id, callback_query.message.id,
                                 reply_markup=mkup)
 
 #Профиль
@@ -167,6 +172,25 @@ async def download_DB(callback: types.CallbackQuery):
     mkup.add(xlsx_btn, json_btn, csv_btn, bck_btn)
     await bot.delete_message(callback.message.chat.id, callback.message.id)
     await bot.send_message(callback.message.chat.id, text, reply_markup=mkup)
+
+#Выгрузка CSV из базы
+@bot.callback_query_handler(lambda c: c.data == "dwnldCSV")
+async def downloadcsv(callback: types.CallbackQuery, state: StateContext):
+    async with state.data() as data:
+        login = data.get("login")
+    df = return_worker_top(login, 'salary')
+    df2 = return_worker_top(login, 'price')
+    file_path = f"files/{login}_salary.csv"
+    file_path2 = f"files/{login}_price.csv"
+    df.to_csv(file_path)
+    df2.to_csv(file_path2)
+    with open(file_path, 'rb') as file:
+        await bot.send_document(callback.message.chat.id, file)
+    with open(file_path2, 'rb') as file:
+        await bot.send_document(callback.message.chat.id, file)
+    os.remove(file_path)
+    os.remove(file_path2)
+    await MainMenu(callback.message, state)
 
 #Управление сотрудниками
 @bot.callback_query_handler(lambda c:c.data == 'Manage')
