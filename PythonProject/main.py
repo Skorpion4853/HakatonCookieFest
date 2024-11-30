@@ -2,12 +2,16 @@
 import mysql.connector
 import asyncio
 import sngs
+import DabaseCommand
+import  Config
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 from telebot.asyncio_storage import StateMemoryStorage
 from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot import asyncio_filters
 from telebot.states.sync.context import StateContext
+from DabaseCommand import auth
+from Config import get_token
 
 #Объяление бота
 bot = AsyncTeleBot(sngs.bot_token ,state_storage=StateMemoryStorage())
@@ -16,9 +20,6 @@ class loginState(StatesGroup):
     login = State()
     password = State()
     authorizated = State()
-
-def check_login(login, password):
-    return True
 
 #Подключение к SQL-серверу
 sql = mysql.connector.connect(user = sngs.USERNAME,
@@ -54,20 +55,22 @@ async def password_state(message, state: StateContext):
     async with state.data() as data:
         login = data.get("login")
         password = data.get("password")
-    status = check_login(login=login, password=password)
-    if status:
+    status = auth(login=login, password=password)
+    if status != None:
         await bot.send_message(message.chat.id, f"Вы успешно зашли под логином: {login}")
         await bot.set_state(user_id=message.from_user.id, state=loginState.authorizated,
                           chat_id=message.chat.id)
+        await state.add_data(permission=status)
+        await MainMenu(message, state)
     else:
         await bot.send_message(message.chat.id, f"Неправильный логин или пароль!!")
-    await bot.delete_state(user_id=message.from_user.id, chat_id=message.chat.id)
 
 
 #Main Menu
-@bot.message_handler(content_types=['text'])
-async def MainMenu(message):
-    adm = int(message.text)     #надо брать из БД, но пока заглушка
+@bot.message_handler(state=loginState.authorizated)
+async def MainMenu(message, state: StateContext):
+    async with state.data() as data:
+        adm = data.get('permission')
     if adm == 1:    #надо брать из БД, но пока заглушка
         username = 'Иванов Иван Иваныч'     #надо брать из БД, но пока заглушка
         text = f'Привет, {username}\nВыбери действие'
@@ -77,7 +80,7 @@ async def MainMenu(message):
         mng_btn = types.InlineKeyboardButton(text='Управление сотрудниками \U0001F9FE', callback_data='Manage')
         mkup.add(rngs_btn, dwnld_btn, mng_btn)
         await bot.send_message(message.chat.id, text, reply_markup=mkup)
-    elif adm == 0:      #надо брать из БД, но пока заглушка
+    elif adm == 0:
         username = 'Иванов Иван Иваныч'     #надо брать из БД, но пока заглушка
         text = f'Привет, {username}\nВыбери действие'
         mkup = types.InlineKeyboardMarkup(row_width=1)
@@ -115,12 +118,13 @@ async def check_callback_data(callback):
         btn2 = types.InlineKeyboardButton(text='Профиль \U0000274C', callback_data='profile')
         marup.add(btn1, btn2)
         await bot.edit_message_text(text, callback.message.chat.id, callback.message.id, reply_markup=marup)
+
     #callback'и работодателя
     elif callback.data == 'ratingsEmployeer': #Выводим раздел рейтинги
         mkup = types.InlineKeyboardMarkup(row_width=1)
-        glb_rtngs_btn = types.InlineKeyboardButton(text='Глобальный \U0001F5FA', callback_data='global rating')
-        brnch_rtngs_btn = types.InlineKeyboardButton(text='Филиалов \U0001F3D8', callback_data='branches rating')
-        lcl_rtngs_btn = types.InlineKeyboardButton(text='Вашего филилала \U0001F3E0', callback_data='local rating')
+        glb_rtngs_btn = types.InlineKeyboardButton(text='Глобальный \U0001F5FA', callback_data='global rating em')
+        brnch_rtngs_btn = types.InlineKeyboardButton(text='Филиалов \U0001F3D8', callback_data='branches rating em')
+        lcl_rtngs_btn = types.InlineKeyboardButton(text='Вашего филилала \U0001F3E0', callback_data='local rating em')
         bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToEmployeerMenu')
         mkup.add(glb_rtngs_btn, brnch_rtngs_btn, lcl_rtngs_btn, bck_btn)
         await bot.edit_message_text('Выберите рейтинг \U0001F4C8',callback.message.chat.id, callback.message.id , reply_markup = mkup)
@@ -158,6 +162,7 @@ bot.add_custom_filter(asyncio_filters.StateFilter(bot))
 from telebot.states.asyncio.middleware import StateMiddleware
 
 bot.setup_middleware(StateMiddleware(bot))
+print("bot is active")
 asyncio.run(bot.polling())
 
 
