@@ -36,17 +36,17 @@ async def start(message):
 @bot.message_handler(content_types=['text'])
 async def MainMenu(message):
     adm = 0
-    if adm == 1:  #надо брать из БД, но пока заглушка
-        username = 'Иванов Иван Иваныч'
+    if adm == 1:    #надо брать из БД, но пока заглушка
+        username = 'Иванов Иван Иваныч'     #надо брать из БД, но пока заглушка
         text = f'Привет, {username}\nВыбери действие'
         mkup = types.InlineKeyboardMarkup()
         rngs_btn = types.InlineKeyboardButton(text='Рейтинги', callback_data='ratings')
         dwnld_btn = types.InlineKeyboardButton(text='Выгрузить БД', callback_data='downloadDB')
         mng_btn = types.InlineKeyboardButton(text='Управление сотрудниками', callback_data='Manage')
-        mkup.Add(rngs_btn, dwnld_btn, mng_btn)
+        mkup.add(rngs_btn, dwnld_btn, mng_btn)
         await bot.send_message(message.chat.id, text, reply_markup=mkup)
-    elif adm == 0:  #надо брать из БД, но пока заглушка
-        username = 'Иванов Иван Иваныч'
+    elif adm == 0:      #надо брать из БД, но пока заглушка
+        username = 'Иванов Иван Иваныч'     #надо брать из БД, но пока заглушка
         text = f'Привет, {username}\nВыбери действие'
         mkup = types.InlineKeyboardMarkup()
         rngs_btn = types.InlineKeyboardButton(text = 'Рейтинги', callback_data='ratings')
@@ -60,9 +60,12 @@ async def MainMenu(message):
 async def check_callback_data(callback):
     if callback.data == 'ratings': #Выводим раздел рейтинги
         mkup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(text='Назад', callback_data='back')
-        mkup.add(btn1)
-        await bot.edit_message_text('Рейтинги пока не доступны',callback.message.chat.id, callback.message.id, reply_markup = mkup)
+        glb_rtngs_btn = types.InlineKeyboardButton(text='Глобальный', callback_data='global rating')
+        brnch_rtngs_btn = types.InlineKeyboardButton(text='Филиалов', callback_data='branches rating')
+        lcl_rtngs_btn = types.InlineKeyboardButton(text='Вашего филилала', callback_data='local rating')
+        bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='back')
+        mkup.add(glb_rtngs_btn, brnch_rtngs_btn, lcl_rtngs_btn, bck_btn)
+        await bot.edit_message_text('Выберите рейтинг',callback.message.chat.id, callback.message.id , reply_markup = mkup)
     elif callback.data == 'profile': #Выводим раздел профиль
         username = 'Иванов Иван Иваныч'  # Заглушка, брать из БД
         text = f'Профиль\nФИО: {username}'
