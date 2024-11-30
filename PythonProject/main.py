@@ -26,12 +26,12 @@ async def start(message):
 #Main Menu
 @bot.message_handler(content_types=['text'])
 async def MainMenu(message):
-    adm = 1     #надо брать из БД, но пока заглушка
+    adm = int(message.text)     #надо брать из БД, но пока заглушка
     if adm == 1:    #надо брать из БД, но пока заглушка
         username = 'Иванов Иван Иваныч'     #надо брать из БД, но пока заглушка
         text = f'Привет, {username}\nВыбери действие'
         mkup = types.InlineKeyboardMarkup(row_width=1)
-        rngs_btn = types.InlineKeyboardButton(text='Рейтинги', callback_data='ratingsEmployeer')
+        rngs_btn = types.InlineKeyboardButton(text='Рейтинги \U0001F4C8', callback_data='ratingsEmployeer')
         dwnld_btn = types.InlineKeyboardButton(text='Выгрузить БД', callback_data='downloadDB')
         mng_btn = types.InlineKeyboardButton(text='Управление сотрудниками', callback_data='Manage')
         mkup.add(rngs_btn, dwnld_btn, mng_btn)
@@ -40,8 +40,8 @@ async def MainMenu(message):
         username = 'Иванов Иван Иваныч'     #надо брать из БД, но пока заглушка
         text = f'Привет, {username}\nВыбери действие'
         mkup = types.InlineKeyboardMarkup(row_width=1)
-        rngs_btn = types.InlineKeyboardButton(text = 'Рейтинги', callback_data='ratings')
-        prfl_btn = types.InlineKeyboardButton(text = 'Профиль', callback_data='profile')
+        rngs_btn = types.InlineKeyboardButton(text = 'Рейтинги \U0001F4C8', callback_data='ratings')
+        prfl_btn = types.InlineKeyboardButton(text = 'Профиль \U0000274C', callback_data='profile')
         mkup.add(rngs_btn,prfl_btn)
         await bot.send_message(message.chat.id, text, reply_markup= mkup)
 
@@ -51,16 +51,16 @@ async def MainMenu(message):
 async def check_callback_data(callback):
     #callback'и работника
     if callback.data == 'ratings': #Выводим раздел рейтинги
-        mkup = types.InlineKeyboardMarkup()
-        glb_rtngs_btn = types.InlineKeyboardButton(text='Глобальный', callback_data='global rating')
-        brnch_rtngs_btn = types.InlineKeyboardButton(text='Филиалов', callback_data='branches rating')
-        lcl_rtngs_btn = types.InlineKeyboardButton(text='Вашего филилала', callback_data='local rating')
+        mkup = types.InlineKeyboardMarkup(row_width=1)
+        glb_rtngs_btn = types.InlineKeyboardButton(text='Глобальный \U0001F5FA', callback_data='global rating')
+        brnch_rtngs_btn = types.InlineKeyboardButton(text='Филиалов \U0001F3D8', callback_data='branches rating')
+        lcl_rtngs_btn = types.InlineKeyboardButton(text='Вашего филилала \U0001F3E0', callback_data='local rating')
         bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToEmployeeMenu')
         mkup.add(glb_rtngs_btn, brnch_rtngs_btn, lcl_rtngs_btn, bck_btn)
-        await bot.edit_message_text('Выберите рейтинг',callback.message.chat.id, callback.message.id , reply_markup = mkup)
+        await bot.edit_message_text('Выберите рейтинг \U0001F4C8',callback.message.chat.id, callback.message.id , reply_markup = mkup)
     elif callback.data == 'profile': #Выводим раздел профиль
         username = 'Иванов Иван Иваныч'  # Заглушка, брать из БД
-        text = f'Профиль\nФИО: {username}'
+        text = 'Данная функция пока в разработке \U0001F634'
         mkup = types.InlineKeyboardMarkup()
         bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToEmployeeMenu')
         mkup.add(bck_btn)
@@ -70,24 +70,24 @@ async def check_callback_data(callback):
         username = 'Иванов Иван Иваныч' #Заглушка, брать из БД
         text = f'Привет, {username}\nВыбери действие'
         marup = types.InlineKeyboardMarkup()
-        btn1 = types.InlineKeyboardButton(text='Рейтинги', callback_data='ratings')
-        btn2 = types.InlineKeyboardButton(text='Профиль', callback_data='profile')
+        btn1 = types.InlineKeyboardButton(text='Рейтинги \U0001F4C8', callback_data='ratings')
+        btn2 = types.InlineKeyboardButton(text='Профиль \U0000274C', callback_data='profile')
         marup.add(btn1, btn2)
         await bot.edit_message_text(text, callback.message.chat.id, callback.message.id, reply_markup=marup)
     #callback'и работодателя
     elif callback.data == 'ratingsEmployeer': #Выводим раздел рейтинги
-        mkup = types.InlineKeyboardMarkup()
-        glb_rtngs_btn = types.InlineKeyboardButton(text='Глобальный', callback_data='global rating')
-        brnch_rtngs_btn = types.InlineKeyboardButton(text='Филиалов', callback_data='branches rating')
-        lcl_rtngs_btn = types.InlineKeyboardButton(text='Вашего филилала', callback_data='local rating')
+        mkup = types.InlineKeyboardMarkup(row_width=1)
+        glb_rtngs_btn = types.InlineKeyboardButton(text='Глобальный \U0001F5FA', callback_data='global rating')
+        brnch_rtngs_btn = types.InlineKeyboardButton(text='Филиалов \U0001F3D8', callback_data='branches rating')
+        lcl_rtngs_btn = types.InlineKeyboardButton(text='Вашего филилала \U0001F3E0', callback_data='local rating')
         bck_btn = types.InlineKeyboardButton(text='Назад', callback_data='BackToEmployeerMenu')
         mkup.add(glb_rtngs_btn, brnch_rtngs_btn, lcl_rtngs_btn, bck_btn)
-        await bot.edit_message_text('Выберите рейтинг',callback.message.chat.id, callback.message.id , reply_markup = mkup)
+        await bot.edit_message_text('Выберите рейтинг \U0001F4C8',callback.message.chat.id, callback.message.id , reply_markup = mkup)
     elif callback.data == 'BackToEmployeerMenu':
         username = 'Иванов Иван Иваныч'  # надо брать из БД, но пока заглушка
         text = f'Привет, {username}\nВыбери действие'
         mkup = types.InlineKeyboardMarkup(row_width=1)
-        rngs_btn = types.InlineKeyboardButton(text='Рейтинги', callback_data='ratingsEmployeer')
+        rngs_btn = types.InlineKeyboardButton(text='Рейтинги \U0001F4C8', callback_data='ratingsEmployeer')
         dwnld_btn = types.InlineKeyboardButton(text='Выгрузить БД', callback_data='downloadDB')
         mng_btn = types.InlineKeyboardButton(text='Управление сотрудниками', callback_data='Manage')
         mkup.add(rngs_btn, dwnld_btn, mng_btn)
