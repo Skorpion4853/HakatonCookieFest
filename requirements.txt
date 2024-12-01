@@ -5,3 +5,5 @@ PyTelegramBotAPI==4.24.0
 python==3.12
 openpyxl==3.1.5
 facker==33.1.0
+mysql-connector==9.1.0
+pandas==2.2.3
