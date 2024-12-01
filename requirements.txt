@@ -1,3 +1,6 @@
 pip==24.3.1
 asyncio==3.4.3
 PyTelegramBotAPI==4.24.0
+python==3.12
+openpyexcel==3.1.5
+facker==33.1.0
