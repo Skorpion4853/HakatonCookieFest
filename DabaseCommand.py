@@ -383,7 +383,7 @@ def get_full_name(login: str) -> str:
         cursor.close()
         cnx.close()
 
-        return full_name
+        return full_name[0][0]
     else:
         return "Could not connect"
 
