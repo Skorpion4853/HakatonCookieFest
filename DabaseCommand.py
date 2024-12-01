@@ -34,15 +34,15 @@ def get_worker_top(cur_user: str, sorting: str) -> str: #Функция для �
         #Вытаскивание данных из БД
 
         #Запрос на вывод филиала залогиненого сотрудника
-        query = "SELECT id, branch FROM Users WHERE login = %s"
+        query = "SELECT id, filial FROM Users WHERE login = %s"
         cursor.execute(query, [cur_user])
-        cur_branch = cursor.fetchall()
-        cur_user = cur_branch[0][0]
-        cur_branch = cur_branch[0][1]
+        cur_filial = cursor.fetchall()
+        cur_user = cur_filial[0][0]
+        cur_filial = cur_filial[0][1]
 
         #Запрос на вывод всех сотрудников филиала
-        query = "SELECT id, full_name FROM Users WHERE branch = %s"
-        cursor.execute(query, [cur_branch])
+        query = "SELECT id, full_name FROM Users WHERE filial = %s"
+        cursor.execute(query, [cur_filial])
         users = cursor.fetchall()
 
         #Создание списка всех сотрудников филиала
@@ -121,14 +121,14 @@ def return_worker_top(cur_user: str, sorting: str) -> pd.DataFrame or str: #Фу
         #Вытаскивание данных из БД
 
         # Запрос на вывод филиала залогиненого сотрудника
-        query = "SELECT id, branch FROM Users WHERE login = %s"
+        query = "SELECT id, filial FROM Users WHERE login = %s"
         cursor.execute(query, [cur_user])
-        cur_branch = cursor.fetchall()
-        cur_branch = cur_branch[0][1]
+        cur_filial = cursor.fetchall()
+        cur_filial = cur_filial[0][1]
 
         # Запрос на вывод всех сотрудников филиала
-        query = "SELECT id, full_name FROM Users WHERE branch = %s"
-        cursor.execute(query, [cur_branch])
+        query = "SELECT id, full_name FROM Users WHERE filial = %s"
+        cursor.execute(query, [cur_filial])
         users = cursor.fetchall()
 
         #Создание списка всех сотрудников филиала
@@ -170,7 +170,7 @@ def return_worker_top(cur_user: str, sorting: str) -> pd.DataFrame or str: #Фу
     else:
         return "Could not connect"
 
-def get_branch_top(cur_user: str) -> str: #Функция для вывода топ 10 филиалов
+def get_filial_top(cur_user: str) -> str: #Функция для вывода топ 10 филиалов
 
     cnx = connect_to_mysql(get_config(), attempts=3) #делаем коннект к БД
 
@@ -182,12 +182,12 @@ def get_branch_top(cur_user: str) -> str: #Функция для вывода т
         #Запрос на вывод филиала залогиненого сотрудника
         query = "SELECT filial FROM Users WHERE login = %s"
         cursor.execute(query, [cur_user])
-        cur_branch = cursor.fetchall()\
+        cur_filial = cursor.fetchall()\
 
         #Запрос на вывод филиала каждого сотрудника
         query = "SELECT filial FROM Users"
         cursor.execute(query)
-        users_branches = cursor.fetchall()
+        users_filials = cursor.fetchall()
 
         query = "SELECT * FROM Operations"
         cursor.execute(query)
@@ -196,23 +196,23 @@ def get_branch_top(cur_user: str) -> str: #Функция для вывода т
         operation_df = pd.DataFrame(columns=["id", "counterparty", "worker_id", "type", "status", "status_payment",
                                              "date", "price"], data=operations)
         #Заменяем worker_id на филиалы
-        branches = []
+        filials = []
         for operation in operation_df.to_numpy():
-            branches.append(users_branches[operation[2]-1][0])
-        operation_df["worker_id"] = branches
+            filials.append(users_filials[operation[2]-1][0])
+        operation_df["worker_id"] = filials
 
 
         data = [] #Пустышка для сохранения данных для итогового, дата фрейма с рейтингом
-        unique_branches = set(users_branches)
-        for branch in unique_branches: #перебираем все филиалы
+        unique_filials = set(users_filials)
+        for filial in unique_filials: #перебираем все филиалы
             price = 0.00
             # Создаем объект дата фрейма со всеми операциями филиала
-            for operation in operation_df[operation_df["worker_id"].isin([branch[0]])].to_numpy():
+            for operation in operation_df[operation_df["worker_id"].isin([filial[0]])].to_numpy():
                 price += operation[-1]
-            data.append([branch[0], round(price, 2)])
+            data.append([filial[0], round(price, 2)])
 
 
-        df_top_u = pd.DataFrame(columns=["branch", "price"], data=data) #Создаем pd серию для вывода
+        df_top_u = pd.DataFrame(columns=["filial", "price"], data=data) #Создаем pd серию для вывода
         df_top_u = df_top_u.sort_values('price', ascending=False) #Делаем сортировку по выбранному параметру
 
         user_place = -1 #Сохранение позиции в топе у филиала user
@@ -221,7 +221,7 @@ def get_branch_top(cur_user: str) -> str: #Функция для вывода т
 
         for top_user in df_top_u.to_numpy():
             place += 1 #Делаем перемещение по местам в топе
-            if cur_branch[0] == top_user[0]: #Сохраняем позицию пользователя если ФИО совпадает
+            if cur_filial[0] == top_user[0]: #Сохраняем позицию пользователя если ФИО совпадает
                 user_place = place
             #Делаем проверку для первые 3 филиала и добавляем им стикеры соответсвующее их месту в топе
             if place == 1:
@@ -233,7 +233,7 @@ def get_branch_top(cur_user: str) -> str: #Функция для вывода т
             elif place <= 10:
                 #Выводим оставшейся места с указанием их позиции в топе
                 top_str += str(place)+ " " + " ".join(map(str,top_user))+ "\n"
-            elif user_place > 10 and cur_branch[0] == top_user[0]:
+            elif user_place > 10 and cur_filial[0] == top_user[0]:
                 #Если филиал пользователя не входит в 10 лучших, то выводим его место отдельно от остальных
                 top_str += ". . .\n"
                 top_str += str(place)+ " " + " ".join(map(str,top_user))+ "\n"
@@ -246,7 +246,7 @@ def get_branch_top(cur_user: str) -> str: #Функция для вывода т
         return "Could not connect"
 
 
-def return_branch_top(cur_user: str) -> pd.DataFrame or str: #Функция для выгрузки топа филиалов
+def return_filial_top(cur_user: str) -> pd.DataFrame or str: #Функция для выгрузки топа филиалов
 
     cnx = connect_to_mysql(get_config(), attempts=3) #делаем коннект к БД
 
@@ -262,7 +262,7 @@ def return_branch_top(cur_user: str) -> pd.DataFrame or str: #Функция д�
         #Запрос на вывод филиала каждого сотрудника
         query = "SELECT filial FROM Users"
         cursor.execute(query)
-        users_branches = cursor.fetchall()
+        users_filials = cursor.fetchall()
 
         query = "SELECT * FROM Operations"
         cursor.execute(query)
@@ -271,23 +271,23 @@ def return_branch_top(cur_user: str) -> pd.DataFrame or str: #Функция д�
         operation_df = pd.DataFrame(columns=["id", "counterparty", "worker_id", "type", "status", "status_payment",
                                              "date", "price"], data=operations)
         #Заменяем worker_id на филиалы
-        branches = []
+        filials = []
         for operation in operation_df.to_numpy():
-            branches.append(users_branches[operation[2]-1][0])
-        operation_df["worker_id"] = branches
+            filials.append(users_filials[operation[2]-1][0])
+        operation_df["worker_id"] = filials
 
 
         data = [] #Пустышка для сохранения данных для итогового, дата фрейма с рейтингом
-        unique_branches = set(users_branches)
-        for branch in unique_branches: #перебираем все филиалы
+        unique_filials = set(users_filials)
+        for filial in unique_filials: #перебираем все филиалы
             price = 0.00
             # Создаем объект дата фрейма со всеми операциями филиала
-            for operation in operation_df[operation_df["worker_id"].isin([branch[0]])].to_numpy():
+            for operation in operation_df[operation_df["worker_id"].isin([filial[0]])].to_numpy():
                 price += operation[-1]
-            data.append([branch, round(price, 2)])
+            data.append([filial, round(price, 2)])
 
 
-        df_top_u = pd.DataFrame(columns=["branch", "price"], data=data) #Создаем pd серию для вывода
+        df_top_u = pd.DataFrame(columns=["filial", "price"], data=data) #Создаем pd серию для вывода
         df_top_u = df_top_u.sort_values('price', ascending=False) #Делаем сортировку по выбранному параметру
 
         cursor.close()
