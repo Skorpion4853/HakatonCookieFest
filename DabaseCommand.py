@@ -362,7 +362,7 @@ def update_user(full_name: str, login=None, password=None, filial=None, access=N
         cursor.close()
         cnx.close()
 
-        return "Сотрудник был удален"
+        return "Профиль сотрудника был обновлён"
     else:
         return "Could not connect"
 

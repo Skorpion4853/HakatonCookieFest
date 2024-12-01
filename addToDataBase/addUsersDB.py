@@ -61,7 +61,6 @@ for user in data_user:
 
 cursor.execute('SELECT * FROM Users')
 users = cursor.fetchall()
-i = 0
 
 
 
