@@ -70,7 +70,7 @@ def get_worker_top(cur_user: str, sorting: str) -> str: #Функция для �
                 price += operation[-1]
                 salary += operation[-1] * prices[operation[3]] / 100
             full_name = users_df[users_df["id"].isin([user])]["full_name"].to_numpy()[0] #Вытаскиваем фио сотрудника
-            data.append([full_name, round(price, 2), round(salary, 2)])
+            data.append([full_name[0], round(price, 2), round(salary, 2)])
 
 
 
@@ -157,7 +157,7 @@ def return_worker_top(cur_user: str, sorting: str) -> pd.DataFrame or str: #Фу
                 price += operation[-1]
                 salary += operation[-1] * prices[operation[3]] / 100
             full_name = users_df[users_df["id"].isin([user])]["full_name"].to_numpy()[0] #Вытаскиваем фио сотрудника
-            data.append([full_name, round(price, 2), round(salary, 2)])
+            data.append([full_name[0], round(price, 2), round(salary, 2)])
 
 
 
@@ -284,7 +284,7 @@ def return_filial_top(cur_user: str) -> pd.DataFrame or str: #Функция д�
             # Создаем объект дата фрейма со всеми операциями филиала
             for operation in operation_df[operation_df["worker_id"].isin([filial[0]])].to_numpy():
                 price += operation[-1]
-            data.append([filial, round(price, 2)])
+            data.append([filial[0], round(price, 2)])
 
 
         df_top_u = pd.DataFrame(columns=["filial", "price"], data=data) #Создаем pd серию для вывода
@@ -457,7 +457,7 @@ def get_global_top(cur_user: str, sorting: str) -> str: #Функция для �
                 price += operation[-1]
                 salary += operation[-1] * prices[operation[3]] / 100
             full_name = users_df[users_df["id"].isin([user])]["full_name"].to_numpy()[0] #Вытаскиваем фио сотрудника
-            data.append([full_name, round(price, 2), round(salary, 2)])
+            data.append([full_name[0], round(price, 2), round(salary, 2)])
 
 
 
@@ -535,7 +535,7 @@ def return_global_top(sorting: str) -> pd.DataFrame or str: #Функция дл
                 price += operation[-1]
                 salary += operation[-1] * prices[operation[3]] / 100
             full_name = users_df[users_df["id"].isin([user])]["full_name"].to_numpy()[0] #Вытаскиваем фио сотрудника
-            data.append([full_name, round(price, 2), round(salary, 2)])
+            data.append([full_name[0], round(price, 2), round(salary, 2)])
 
 
 
