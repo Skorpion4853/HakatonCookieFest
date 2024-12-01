@@ -319,13 +319,13 @@ def add_user(full_name: str, login: str, password: str, filial: str, access: boo
         return "Could not connect"
 
 
-def delete_user(login: str) -> str:
+def delete_user(full_name: str) -> str:
     cnx = connect_to_mysql(get_config(), attempts=3)  # делаем коннект к БД
 
     if cnx and cnx.is_connected():  # Если коннект прошел успешно создаем курсор
         cursor = cnx.cursor()
-        query = "DELETE FROM Users WHERE login = %s"
-        cursor.execute(query, [login])
+        query = "DELETE FROM Users WHERE full_name = %s"
+        cursor.execute(query, [full_name])
 
         cnx.commit()
         cursor.close()
