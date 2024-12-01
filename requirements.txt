@@ -3,5 +3,5 @@ asyncio==3.4.3
 aiohttp==3.11.8
 PyTelegramBotAPI==4.24.0
 python==3.12
-openpyexcel==3.1.5
+openpyxl==3.1.5
 facker==33.1.0
