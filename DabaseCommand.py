@@ -336,6 +336,57 @@ def delete_user(login: str) -> str:
         return "Could not connect"
 
 
+def update_user(full_name: str, login=None, password=None, filial=None, access=None) -> str:
+    cnx = connect_to_mysql(get_config(), attempts=3)  # делаем коннект к БД
+
+    if cnx and cnx.is_connected():  # Если коннект прошел успешно создаем курсор
+        cursor = cnx.cursor()
+        query = "SELECT * FROM Users WHERE full_name = %s"
+        cursor.execute(query, [full_name])
+        user_info = cursor.fetchall()
+
+        if login is None:
+            login = user_info[0][2]
+        if password is None:
+            password = user_info[0][3]
+        if filial is None:
+            filial = user_info[0][4]
+        if access is None:
+            access = user_info[0][-1]
+
+
+        query = "UPDATE Users SET login = %s, password = %s, filial = %s, access = %s WHERE id = %s"
+        cursor.execute(query, [login, password, filial, access, user_info[0][0]])
+
+        cnx.commit()
+        cursor.close()
+        cnx.close()
+
+        return "Сотрудник был удален"
+    else:
+        return "Could not connect"
+
+
+def get_full_name(login: str) -> str:
+    cnx = connect_to_mysql(get_config(), attempts=3)  # делаем коннект к БД
+
+    if cnx and cnx.is_connected():  # Если коннект прошел успешно создаем курсор
+        cursor = cnx.cursor()
+
+        # Вытаскивание данных из БД
+
+        # Запрос на вывод филиала залогиненого сотрудника
+        query = "SELECT full_name FROM Users WHERE login = %s"
+        cursor.execute(query, [login])
+        full_name = cursor.fetchall()
+
+        cursor.close()
+        cnx.close()
+
+        return full_name
+    else:
+        return "Could not connect"
+
 def auth(login: str, password: str) -> bool or None:
     cnx = connect_to_mysql(get_config(), attempts=3) #делаем коннект к БД
 
